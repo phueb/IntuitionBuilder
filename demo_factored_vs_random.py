@@ -7,6 +7,8 @@ and change with the co-occurrence structure between two discrete random variable
 
 import numpy as np
 from pyitlib import discrete_random_variable as drv
+from sklearn.metrics.cluster import adjusted_mutual_info_score
+from sklearn.utils.extmath import randomized_svd
 
 from infotheorydemo.figs import plot_heatmap
 from infotheorydemo.utils import to_pyitlib_format
@@ -34,11 +36,14 @@ for co_mat in [co_mat1, co_mat2, co_mat3]:
     plot_heatmap(co_mat, [], [])
 
     # convert data into format used by pyitlib
-    targets, contexts = to_pyitlib_format(co_mat)
+    xs, ys = to_pyitlib_format(co_mat)
 
-    mi_drv = drv.information_mutual(targets, contexts)
-    vi_drv = drv.information_variation(targets, contexts)
-    xy = np.vstack((targets, contexts))
-    je_drv = drv.entropy_joint(xy)  # rvs in rows
-    diff = je_drv - vi_drv
-    print(' '.join([f'{mi:.4f}' for mi in [mi_drv, vi_drv, je_drv, diff]]))
+    print(f' mi={drv.information_mutual(xs, ys):>6.3f}')
+    print(f'nmi={drv.information_mutual_normalised(xs, ys):>6.3f}')
+    print(f'ami={adjusted_mutual_info_score(xs, ys, average_method="arithmetic"):>6.3f}')
+
+    # factor analysis
+    print('Factor analysis...')
+    u, s, v = randomized_svd(co_mat, n_components=co_mat.shape[1])
+    with np.printoptions(precision=2, suppress=True):
+        print(s[:2])
