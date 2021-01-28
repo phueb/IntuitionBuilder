@@ -1,7 +1,6 @@
 
 """
-A visual demonstration of how mutual information, variation information, and joint entropy are related,
-and change with the co-occurrence structure between two discrete random variables
+A visual demonstration of how mutual information is invariant to factor-structure of matrix
 
 """
 

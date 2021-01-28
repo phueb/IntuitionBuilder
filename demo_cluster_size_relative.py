@@ -1,7 +1,7 @@
 
 """
 A visual demonstration of how mutual information, and conditional entropy change
-when rows or columns are shifted but not modified
+when the size of a cluster changes relative to another
 
 """
 
@@ -14,20 +14,21 @@ from infotheorydemo.figs import plot_heatmap
 from infotheorydemo.utils import to_pyitlib_format
 
 FILL_VAL = 64
-SHAPE = (8, 8)
+INNER_SHAPE = (8, 8)
 
-o = np.ones(SHAPE, dtype=np.int)
-z = np.ones(SHAPE, dtype=np.int) - 1
+o = np.ones(INNER_SHAPE, dtype=np.int) * FILL_VAL
+z = np.ones(INNER_SHAPE, dtype=np.int) - 1
 
 co_mat1 = np.block(
     [[o, z],
      [z, o]]
-) * FILL_VAL
+)
 
-data1 = []
-for n, row in enumerate(co_mat1):
-    data1.append(np.roll(row, n))
-co_mat2 = np.vstack(data1)
+co_mat2 = np.block(
+    [[o, z],
+     [o, z],
+     [z, o]]
+)[len(o) //2:len(o) //2 + len(co_mat1)]
 
 for co_mat in [co_mat1, co_mat2]:
 

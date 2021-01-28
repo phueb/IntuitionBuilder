@@ -1,7 +1,7 @@
 
 """
 A visual demonstration of how mutual information, and conditional entropy change
-when rows or columns are shifted but not modified
+when diagonals are moved
 
 """
 
@@ -13,21 +13,25 @@ from sklearn.utils.extmath import randomized_svd
 from infotheorydemo.figs import plot_heatmap
 from infotheorydemo.utils import to_pyitlib_format
 
-FILL_VAL = 64
-SHAPE = (8, 8)
+shape = (16, 16)
+FILL_VAL1 = 16
 
-o = np.ones(SHAPE, dtype=np.int)
-z = np.ones(SHAPE, dtype=np.int) - 1
-
+o = np.ones(shape, dtype=np.int) * FILL_VAL1
+z = np.ones(shape, dtype=np.int) - 1
 co_mat1 = np.block(
     [[o, z],
      [z, o]]
-) * FILL_VAL
+)
 
-data1 = []
-for n, row in enumerate(co_mat1):
-    data1.append(np.roll(row, n))
-co_mat2 = np.vstack(data1)
+z1 = z.copy()
+o1 = o.copy()
+np.fill_diagonal(o1, 0)
+np.fill_diagonal(z1, FILL_VAL1)
+co_mat2 = np.block(
+    [[o1, z1],
+     [z1, o1]]
+)
+
 
 for co_mat in [co_mat1, co_mat2]:
 
@@ -45,6 +49,6 @@ for co_mat in [co_mat1, co_mat2]:
 
     # factor analysis
     print('Factor analysis...')
-    u, s, v = randomized_svd(co_mat, n_components=co_mat.shape[1])
+    u, o, v = randomized_svd(co_mat, n_components=co_mat.shape[1])
     with np.printoptions(precision=2, suppress=True):
-        print(s[:2])
+        print(o[:2])
